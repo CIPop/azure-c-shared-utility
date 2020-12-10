@@ -1035,39 +1035,6 @@ static int enable_domain_check(TLS_IO_INSTANCE* tlsInstance)
     return result;
 }
 
-int engine_load(TLS_IO_INSTANCE* tls)
-{
-    int result;
-
-    tls->engine = ENGINE_by_id(tls->engine_id);
-    if (tls->engine == NULL) 
-    {
-        log_ERR_get_error("unable to load engine by ID.");
-        result = MU_FAILURE;
-    }
-    // TODO: move next to key load operations.
-    else if (!ENGINE_init(tls->engine)) 
-    {
-        log_ERR_get_error("unable to initialize engine.");
-        ENGINE_free(tls->engine);
-        tls->engine = NULL;
-        result = MU_FAILURE;
-    }
-    // TODO: engine set_default on load.
-    else if (!ENGINE_set_default(tls->engine, ENGINE_METHOD_ALL))
-    {
-        log_ERR_get_error("unable to configure engine.");
-        engine_destroy(tls);
-        result = MU_FAILURE;
-    }
-    else
-    {
-        result = 0;
-    }
-    
-    return result;
-}
-
 static int create_openssl_instance(TLS_IO_INSTANCE* tlsInstance)
 {
     int result;
